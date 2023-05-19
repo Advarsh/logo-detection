@@ -1,0 +1,189 @@
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Flickr27 Image Classifier</title>
+  <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">logo detection</a>
+      <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Help</button>
+    </div>
+  </nav>
+   <h1>Flickr27 Image Classifier</h1> 
+  <form method="POST" action="/predict" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <button type="submit">Predict</button>
+  </form>
+  <div id="prediction">
+    <h2>Prediction:</h2>
+    <p id="class_name"></p>
+    <p id="prob"></p>
+    <img id="image" src="">
+  </div>
+  <script>
+    // Get the form and the prediction div
+    const form = document.querySelector('form');
+    const predictionDiv = document.querySelector('#prediction');
+
+    // Listen for the form submit event
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      predictionDiv.innerHTML = '<h2>Loading...</h2>';
+
+      // Get the image file from the form
+      const formData = new FormData(form);
+      const response = await fetch('/predict', {
+        method: 'POST',
+        body: formData
+      });
+
+      // Parse the JSON response and display the prediction
+      const prediction = await response.json();
+      const class_name = prediction.class_name;
+      const prob = prediction.prob.toFixed(4);
+      const filepath = prediction.filepath;
+      predictionDiv.innerHTML = `
+                <h2>Prediction:</h2>
+                <p>Class name: <span id="class_name">${class_name}</span></p>
+                <p>Probability: <span id="prob">${prob}</span></p>
+                <img id="image" src="${filepath}">
+            `;
+    });
+  </script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Flickr27 Image Classifier</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="#">Flickr27 Image Classifier</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#helpModal">
+              Help
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row justify-content-center my-5">
+      <div class="col-md-8">
+        <div class="card shadow">
+          <div class="card-body">
+            <h5 class="card-title text-center">Upload an image to classify</h5>
+            <form method="POST" action="/predict" enctype="multipart/form-data">
+              <div class="input-group mb-3">
+                <input type="file" class="form-control" name="file" accept=".jpg,.jpeg,.png" required>
+              </div>
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">Predict</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow">
+          <div class="card-body">
+            <h5 class="card-title text-center">Prediction</h5>
+            <div class="text-center">
+              <img id="image" src="" class="img-fluid rounded mb-3">
+            </div>
+            <p class="lead text-center" id="class_name"></p>
+            <p class="text-center" id="prob"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="helpModalLabel">Help</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            This web application allows you to upload an image file (in JPG, JPEG, or PNG format) and classify it using
+            a
+            pre-trained deep learning model on the Flickr27 dataset.
+          </p>
+          <p>
+            The predicted class name and probability will be displayed along with the uploaded image after you click the
+            "Predict" button.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Get the form and the prediction div
+    const form = document.querySelector('form');
+    const class_name = document.querySelector('#class_name');
+    const prob = document.querySelector('#prob');
+    const image = document.querySelector('#image');
+
+    // Listen for the form submit event
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      // Get the image file from the form
+      const formData = new FormData(form);
+      const response = await fetch('/predict', {
+        method: 'POST',
+        body: formData
+      });
+
+      // Parse the JSON response and display the prediction
+      const prediction = await response.json();
+      class_name.textContent = `Class name: ${prediction.class_name}`;
+      prob.textContent = `Probability: ${prediction.prob.toFixed(4)}`;
+      image.src = prediction.filepath;
+    });
+  </script>
+</body>
+
+</html>
